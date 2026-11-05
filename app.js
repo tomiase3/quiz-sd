@@ -35,6 +35,7 @@ const state = {
     key: savedSupabaseSettings.key || DEFAULT_SUPABASE_SETTINGS.key
   },
   auth: readStorage(STORAGE_KEYS.auth, null),
+  teacherAuthenticated: false,
   activeStudentId: localStorage.getItem("mathAdventure.activeStudent.v1") || "",
   audio: localStorage.getItem(STORAGE_KEYS.audio) !== "off",
   game: null,
@@ -139,6 +140,7 @@ function renderDashboard() {
   $("#dashStars").textContent = resultRows.reduce((sum, item) => sum + Number(item.score || 0), 0);
   $("#dashAccuracy").textContent = totalQuestions ? `${Math.round(totalCorrect / totalQuestions * 100)}%` : "—";
   $("#recordCount").textContent = resultRows.length ? `${resultRows.length} hasil misi${isCloudConfigured() && state.auth?.access_token ? " · termasuk data cloud" : ""}` : "Belum ada hasil misi";
+  updateExportAccess();
   $("#resultsTable").innerHTML = resultRows.length ? resultRows.map((result) => `
     <tr><td>${escapeHtml(result.student_name || "Petualang")}</td><td>${escapeHtml(result.class_name || "—")}</td>
     <td>${escapeHtml(result.topic_name || getTopic(result.topic_id)?.name || "—")}</td>
@@ -158,9 +160,13 @@ function escapeHtml(value) {
 }
 function updateCloudStatus(message) {
   const status = $("#cloudStatus");
-  status.classList.toggle("connected", Boolean(isCloudConfigured() && state.auth?.access_token));
+  status.classList.toggle("connected", Boolean(isCloudConfigured() && state.teacherAuthenticated));
   status.classList.remove("error");
-  $("#cloudStatusText").textContent = message || (isCloudConfigured() ? (state.auth?.access_token ? "Supabase aktif" : "Cloud · login guru") : "Mode lokal");
+  $("#cloudStatusText").textContent = message || (isCloudConfigured() ? (state.teacherAuthenticated ? "Supabase aktif" : "Cloud · login guru") : "Mode lokal");
+}
+function updateExportAccess() {
+  $("#teacherData").hidden = !state.teacherAuthenticated;
+  $("#exportLoginNotice").hidden = state.teacherAuthenticated;
 }
 function isCloudConfigured() {
   return Boolean(state.settings.url && state.settings.key);
@@ -515,36 +521,37 @@ async function refreshAuth() {
   }
 }
 async function loadCloudRecords() {
+  state.teacherAuthenticated = false;
+  updateExportAccess();
   if (!isCloudConfigured() || !state.auth?.access_token) {
+    setAuthFormState();
     renderDashboard();
     return;
   }
   if (!(await refreshAuth())) {
     $("#teacherAuthFeedback").textContent = "Sesi berakhir. Silakan login kembali.";
-    $("#teacherAuthForm").hidden = false;
-    $("#teacherLogout").hidden = true;
+    setAuthFormState();
     updateCloudStatus();
     return;
   }
-  $("#teacherAuthForm").hidden = false;
-  $("#teacherEmail").hidden = true;
-  $("#teacherPassword").hidden = true;
-  $("#teacherAuthForm button[type=submit]").hidden = true;
-  $("#teacherLogout").hidden = false;
-  $("#teacherAuthFeedback").textContent = "Login guru aktif · data cloud terlindungi";
+  $("#teacherAuthFeedback").textContent = "Memverifikasi akun guru…";
   try {
     const remoteRows = await supabaseRequest("/rest/v1/app_results?select=id,student_id,student_name,class_name,topic_id,topic_name,correct,total,score,level,created_at&order=created_at.desc&limit=1000", { authenticated: true });
+    state.teacherAuthenticated = true;
     const byId = new Map(state.results.map((item) => [item.id, item]));
     for (const item of remoteRows) byId.set(item.id, item);
     state.results = [...byId.values()].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     saveStorage(STORAGE_KEYS.results, state.results);
     renderAll();
     $("#teacherAuthFeedback").textContent = `${remoteRows.length} hasil dari Supabase berhasil dimuat.`;
+    setAuthFormState();
     await syncCloudStudents();
   } catch (error) {
     console.error("Data Supabase tidak dapat dimuat.", error);
     $("#teacherAuthFeedback").textContent = `Data cloud gagal dimuat: ${error.message}`;
     showToast(`Tidak dapat memuat data cloud: ${error.message}`);
+    setAuthFormState();
+    updateExportAccess();
   }
   updateCloudStatus();
 }
@@ -563,7 +570,7 @@ async function syncCloudStudents() {
   }
 }
 function setAuthFormState() {
-  const loggedIn = Boolean(state.auth?.access_token);
+  const loggedIn = state.teacherAuthenticated;
   $("#teacherEmail").hidden = loggedIn;
   $("#teacherPassword").hidden = loggedIn;
   $("#teacherAuthForm button[type=submit]").hidden = loggedIn;
@@ -601,9 +608,39 @@ function exportWord() {
   showToast("Dokumen Word berhasil diunduh.");
 }
 function exportPdf() {
+  document.body.classList.add("teacher-print-authorized");
   $("#teacherDialog").classList.add("printing");
   window.print();
   $("#teacherDialog").classList.remove("printing");
+  document.body.classList.remove("teacher-print-authorized");
+}
+async function runAuthorizedExport(button, exportAction) {
+  button.disabled = true;
+  try {
+    if (!isCloudConfigured() || !(await refreshAuth())) {
+      state.teacherAuthenticated = false;
+      setAuthFormState();
+      updateExportAccess();
+      updateCloudStatus();
+      throw new Error("Sesi guru tidak ditemukan atau sudah berakhir. Silakan login kembali.");
+    }
+    await supabaseRequest("/rest/v1/app_results?select=id&limit=1", { authenticated: true });
+    state.teacherAuthenticated = true;
+    setAuthFormState();
+    updateExportAccess();
+    updateCloudStatus();
+    exportAction();
+  } catch (error) {
+    console.error("Ekspor ditolak karena sesi guru tidak dapat diverifikasi.", error);
+    state.teacherAuthenticated = false;
+    setAuthFormState();
+    updateExportAccess();
+    updateCloudStatus();
+    $("#teacherAuthFeedback").textContent = error.message;
+    showToast(`Unduhan hanya tersedia untuk guru yang sudah login. ${error.message}`);
+  } finally {
+    button.disabled = false;
+  }
 }
 
 $("#studentSelect").addEventListener("change", (event) => {
@@ -667,8 +704,10 @@ $("#settingsForm").addEventListener("submit", async (event) => {
     if (!key) throw new Error("Anon / publishable key belum diisi.");
     state.settings = { url, key };
     state.auth = null;
+    state.teacherAuthenticated = false;
     saveStorage(STORAGE_KEYS.settings, state.settings);
     saveStorage(STORAGE_KEYS.auth, null);
+    updateExportAccess();
     updateCloudStatus();
     setAuthFormState();
     $("#settingsFeedback").textContent = "Pengaturan tersimpan. Cloud akan digunakan untuk hasil misi berikutnya.";
@@ -706,14 +745,16 @@ $("#teacherLogout").addEventListener("click", () => {
     }).catch((error) => console.error("Sesi Supabase tidak dapat ditutup di server.", error));
   }
   state.auth = null;
+  state.teacherAuthenticated = false;
   saveStorage(STORAGE_KEYS.auth, null);
   setAuthFormState();
+  updateExportAccess();
   updateCloudStatus();
   showToast("Kamu sudah keluar dari dashboard cloud.");
 });
-$("#exportExcel").addEventListener("click", exportExcel);
-$("#exportWord").addEventListener("click", exportWord);
-$("#exportPdf").addEventListener("click", exportPdf);
+$("#exportExcel").addEventListener("click", (event) => runAuthorizedExport(event.currentTarget, exportExcel));
+$("#exportWord").addEventListener("click", (event) => runAuthorizedExport(event.currentTarget, exportWord));
+$("#exportPdf").addEventListener("click", (event) => runAuthorizedExport(event.currentTarget, exportPdf));
 $("#clearLocalData").addEventListener("click", () => {
   if (!window.confirm("Hapus semua data siswa dan hasil misi yang tersimpan di perangkat ini? Data Supabase tidak akan dihapus.")) return;
   state.students = [];

@@ -11,6 +11,7 @@ Buka `index.html` di browser modern atau sajikan folder ini melalui static web s
 - Materi: Pecahan; Desimal dan Persen; KPK dan FPB; Operasi Bilangan Cacah; Keliling dan Luas Bangun Datar; Sudut; Bangun Datar; Pengolahan Data.
 - Setiap misi memiliki 20 soal. Tingkat soal mengikuti performa pemain: dua jawaban benar beruntun dapat menaikkan level; jawaban salah menurunkan level.
 - Profil nama dan kelas siswa; ringkasan hasil dan dashboard guru.
+- Data dashboard dan ekspor Excel, Word, serta PDF hanya ditampilkan setelah sesi guru berhasil diverifikasi ke Supabase.
 - Audio bunyi jawaban dapat dimatikan. Profil, pengaturan, dan hasil tetap tersimpan pada browser ketika offline.
 - Ekspor Excel melalui CSV (dibuka oleh Excel), Word melalui `.doc`, dan PDF melalui dialog cetak browser (pilih **Save as PDF / Simpan sebagai PDF**).
 

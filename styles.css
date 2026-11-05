@@ -159,6 +159,8 @@ td:first-child { color: var(--ink); font-weight: 700; }.empty-table { padding: 2
 .instructions-dialog ol { padding-left: 19px; color: #686a7c; font-size: 12px; line-height: 1.8; }.instructions-dialog li { margin-bottom: 6px; }.instructions-dialog > p { margin-top: 14px; }.instructions-dialog code { padding: 2px 5px; border-radius: 5px; background: #f6f1e8; font-size: 11px; }
 .toast { position: fixed; z-index: 10; bottom: 20px; left: 50%; padding: 11px 17px; border-radius: 11px; background: #303348; color: white; font-size: 12px; opacity: 0; pointer-events: none; transform: translate(-50%, 10px); transition: opacity .2s, transform .2s; }.toast.visible { opacity: 1; transform: translate(-50%, 0); }
 body.dialog-open { overflow: hidden; }
+[hidden] { display: none !important; }
+.dashboard-access-notice { margin: 22px 0 4px; padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: #fffcf8; color: #777987; font-size: 12px; text-align: center; }
 @media (max-width: 800px) {
   .page-shell { width: min(100% - 38px, 650px); }
   .hero { grid-template-columns: 1fr .65fr; padding: 30px; }.hero h1 { font-size: 33px; }.art-sun { width: 170px; height: 170px; }
@@ -175,5 +177,5 @@ body.dialog-open { overflow: hidden; }
   .teacher-dialog { padding: 21px 14px; }.dashboard-stats { grid-template-columns: repeat(2, 1fr); }.dashboard-toolbar { align-items: flex-start; flex-direction: column; gap: 9px; }.export-actions { width: 100%; }.export-button { flex: 1; padding: 8px 5px; }.teacher-bottom { align-items: flex-start; flex-direction: column; gap: 6px; }
 }
 @media print {
-  body { background: white; }.page-shell, .app-dialog:not(.teacher-dialog) { display: none !important; }.teacher-dialog[open] { position: static; display: block !important; width: 100%; max-height: none; margin: 0; border: 0; box-shadow: none; overflow: visible; }.teacher-dialog::backdrop { display: none; }.teacher-auth, .dialog-close, .export-actions, .teacher-bottom { display: none !important; }.dashboard-stats, .dashboard-toolbar { width: 100%; }.table-wrap { max-height: none; overflow: visible; border: 0; }th { position: static; background: #eee; }td, th { border: 1px solid #ddd; }
+  body { background: white; }.page-shell, .app-dialog { display: none !important; }body.teacher-print-authorized .teacher-dialog[open] { position: static; display: block !important; width: 100%; max-height: none; margin: 0; border: 0; box-shadow: none; overflow: visible; }.teacher-dialog::backdrop { display: none; }.teacher-auth, .dialog-close, .export-actions, .teacher-bottom { display: none !important; }.dashboard-stats, .dashboard-toolbar { width: 100%; }.table-wrap { max-height: none; overflow: visible; border: 0; }th { position: static; background: #eee; }td, th { border: 1px solid #ddd; }
 }
