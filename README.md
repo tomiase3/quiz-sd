@@ -9,7 +9,7 @@ Buka `index.html` di browser modern atau sajikan folder ini melalui static web s
 ## Fitur
 
 - Materi: Pecahan; Desimal dan Persen; KPK dan FPB; Operasi Bilangan Cacah; Keliling dan Luas Bangun Datar; Sudut; Bangun Datar; Pengolahan Data.
-- Setiap misi memiliki 20 soal. Tingkat soal mengikuti performa pemain: dua jawaban benar beruntun dapat menaikkan level; jawaban salah menurunkan level.
+- Setiap misi memiliki 20 soal: 6 mudah, 7 sedang, 6 sulit, dan 1 soal HOTS berbasis situasi sehari-hari. Soal adaptif dapat meningkat saat dua jawaban benar berturut-turut dan turun saat jawaban salah.
 - Profil nama dan kelas siswa; ringkasan hasil dan dashboard guru.
 - Data dashboard dan ekspor Excel, Word, serta PDF hanya ditampilkan setelah sesi guru berhasil diverifikasi ke Supabase.
 - Audio bunyi jawaban dapat dimatikan. Profil, pengaturan, dan hasil tetap tersimpan pada browser ketika offline.

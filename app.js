@@ -22,6 +22,12 @@ const TOPICS = [
   { id: "bangun-datar", name: "Bangun Datar", icon: "🔷", tag: "BENTUK SERU!", note: "Jelajahi sifat dan ciri aneka bangun datar.", color: "#79a36e", soft: "#f0f7e9" },
   { id: "pengolahan-data", name: "Pengolahan Data", icon: "📊", tag: "BACA DATA!", note: "Baca tabel dan temukan informasi dari data.", color: "#718dd0", soft: "#eef2fd" }
 ];
+const QUESTION_DIFFICULTY = Object.freeze([
+  ...Array(6).fill({ label: "MUDAH", level: 1 }),
+  ...Array(7).fill({ label: "SEDANG", level: 2 }),
+  ...Array(6).fill({ label: "SULIT", level: 3 }),
+  { label: "HOTS", level: 3 }
+]);
 const $ = (selector) => document.querySelector(selector);
 const dialogs = {
   student: $("#studentDialog"), game: $("#gameDialog"), result: $("#resultDialog"),
@@ -181,6 +187,7 @@ function closeDialog(dialog) {
 }
 
 function fractionQuestions(i, level) {
+  if (i === 19) return makeQuestion("1/2", "Sebuah kue utuh tersisa 3/4 bagian. Dari sisa itu, 1/3 bagian dimakan. Berapa bagian kue utuh yang masih tersisa?", ["5/12", "5/8", "1/4"]);
   const n = level === 1 ? 2 + i % 4 : level === 2 ? 3 + i % 5 : 4 + i % 6;
   if (i % 4 === 0) {
     const numerator = 1 + (i * 3) % (n - 1);
@@ -203,6 +210,7 @@ function fractionQuestions(i, level) {
   return makeQuestion(String(unit * part), `Berapakah ${part}/${unit} dari ${unit * unit}?`, [String(unit * (part - 1)), String(unit * (part + 1)), String(unit + part)]);
 }
 function decimalQuestions(i, level) {
+  if (i === 19) return makeQuestion("Rp9.750", "Dita memiliki Rp20.000. Ia menggunakan 35% uangnya untuk membeli buku, lalu menggunakan 1/4 dari sisa uangnya untuk membeli pensil. Berapa uang Dita sekarang?", ["Rp6.500", "Rp12.250", "Rp13.000"]);
   const whole = (i * 7 + level * 3) % 18 + 1;
   switch (i % 4) {
     case 0: {
@@ -224,6 +232,7 @@ function decimalQuestions(i, level) {
   }
 }
 function kpkFpbQuestions(i, level) {
+  if (i === 19) return makeQuestion("08.24", "Dua bel berbunyi bersama pukul 08.00. Bel pertama berbunyi setiap 6 menit dan bel kedua setiap 8 menit. Pukul berapa keduanya berbunyi bersama lagi?", ["08.14", "08.48", "09.00"]);
   const a = (i % 9) + 2 + level;
   const b = ((i * 3) % 8) + 3 + (level - 1);
   const kpk = lcm(a, b);
@@ -232,6 +241,7 @@ function kpkFpbQuestions(i, level) {
   return makeQuestion(String(fpb), `Berapa FPB dari ${a} dan ${b}?`, [String(Math.min(a, b)), String(fpb + 1), String(Math.max(1, fpb - 1))]);
 }
 function operationQuestions(i, level) {
+  if (i === 19) return makeQuestion("13", "Ada 4 kotak berisi 12 pensil masing-masing. Sebanyak 9 pensil dibagikan, lalu sisanya dibagi rata kepada 3 kelompok. Berapa pensil yang diterima setiap kelompok?", ["15", "12", "16"]);
   const scale = level * 100 + 50;
   const a = scale + i * 19;
   const b = 20 + i * 7;
@@ -248,6 +258,7 @@ function operationQuestions(i, level) {
   }
 }
 function geometryQuestions(i, level) {
+  if (i === 19) return makeQuestion("70 m²", "Sebuah taman berbentuk persegi panjang berukuran 12 m × 9 m. Di bagian dalam, dibuat jalan selebar 1 m di sepanjang keempat tepi taman. Berapa luas bagian tengah yang tidak tertutup jalan?", ["90 m²", "108 m²", "80 m²"]);
   const a = 4 + (i * 3) % (8 + level * 2);
   const b = 3 + (i * 2) % (7 + level * 2);
   if (i % 4 === 0) return makeQuestion(`${2 * (a + b)} cm`, `Persegi panjang memiliki panjang ${a} cm dan lebar ${b} cm. Berapa kelilingnya?`, [`${a * b} cm`, `${2 * a + b} cm`, `${a + b} cm`]);
@@ -260,6 +271,7 @@ function geometryQuestions(i, level) {
   return makeQuestion(`${area} cm²`, `Segitiga memiliki alas ${base} cm dan tinggi ${height} cm. Berapa luasnya?`, [`${base * height} cm²`, `${area + base} cm²`, `${area + height} cm²`]);
 }
 function angleQuestions(i, level) {
+  if (i === 19) return makeQuestion("100°", "Dua sudut sebuah segitiga adalah 35° dan 65°. Berapa besar sudut luar pada sudut ketiga segitiga itu?", ["80°", "120°", "150°"]);
   if (i % 3 === 0) {
     const angle = 20 + (i * 19) % 150;
     const type = angle < 90 ? "lancip" : angle === 90 ? "siku-siku" : angle < 180 ? "tumpul" : "lurus";
@@ -272,7 +284,8 @@ function angleQuestions(i, level) {
   const value = 10 + (i * 13 + level * 7) % 75;
   return makeQuestion(`${90 - value}°`, `Sudut ${value}° dan sudut ... membentuk sudut siku-siku.`, [`${180 - value}°`, `${90 + value}°`, `${value}°`]);
 }
-function shapeQuestions(i) {
+function shapeQuestions(i, level) {
+  if (i === 19) return makeQuestion("Persegi, selisih 4 cm²", "Sebuah persegi panjang berukuran 10 cm × 6 cm. Sebuah persegi memiliki keliling yang sama. Bangun mana yang luasnya lebih besar dan berapa selisihnya?", ["Persegi panjang, selisih 4 cm²", "Keduanya sama luas", "Persegi, selisih 8 cm²"]);
   const bank = [
     { q: "Bangun datar dengan 4 sisi sama panjang dan 4 sudut siku-siku adalah ...", a: "Persegi", w: ["Persegi panjang", "Belah ketupat", "Trapesium"] },
     { q: "Segitiga yang ketiga sisinya sama panjang disebut ...", a: "Segitiga sama sisi", w: ["Segitiga sama kaki", "Segitiga siku-siku", "Segitiga sembarang"] },
@@ -293,11 +306,16 @@ function shapeQuestions(i) {
     { q: "Bangun datar bersisi delapan disebut ...", a: "Segi delapan", w: ["Segi enam", "Segi tujuh", "Segi sembilan"] },
     { q: "Berapa jumlah sisi pada segi tujuh?", a: "7 sisi", w: ["5 sisi", "6 sisi", "8 sisi"] }
   ];
-  const item = bank[i % bank.length];
+  const easyBank = bank.slice(0, 6);
+  const mediumBank = bank.slice(6, 12);
+  const hardBank = bank.slice(12);
+  const levelBank = level === 1 ? easyBank : level === 2 ? mediumBank : hardBank;
+  const item = levelBank[i % levelBank.length];
   return makeQuestion(item.a, item.q, item.w);
 }
-function dataQuestions(i) {
-  const a = Array.from({ length: 5 }, (_, index) => 2 + ((index * 3 + (i % 5) * 2) % 11));
+function dataQuestions(i, level) {
+  if (i === 19) return makeQuestion("16 buku", "Jumlah buku yang dibaca selama 5 hari memiliki rata-rata 14 buku per hari. Empat hari pertama: 12, 15, 9, dan 18 buku. Berapa buku yang dibaca pada hari kelima?", ["14 buku", "18 buku", "20 buku"]);
+  const a = Array.from({ length: 5 }, (_, index) => 2 + ((index * (2 + level) + (i % 5) * (level + 1)) % (9 + level * 3)));
   if (i % 4 === 0) {
     const total = a.reduce((sum, number) => sum + number, 0);
     return makeQuestion(String(total), `Data jumlah buku dibaca: ${a.join(", ")} buku. Berapa jumlah semuanya?`, [String(total + 2), String(total - 2), String(total + 5)]);
@@ -362,12 +380,17 @@ function showQuestion() {
   const game = state.game;
   if (!game) return;
   if (game.index >= 20) return finishGame();
-  const question = QUESTION_GENERATORS[game.topicId](game.index, game.level);
+  const difficulty = QUESTION_DIFFICULTY[game.index];
+  const effectiveLevel = Math.min(3, difficulty.level + game.level - 1);
+  const question = QUESTION_GENERATORS[game.topicId](game.index, effectiveLevel);
   const choices = question.choices.slice().sort(() => Math.random() - .5);
   game.currentAnswer = question.answer;
   game.locked = false;
   $("#questionCounter").textContent = `SOAL ${game.index + 1} DARI 20`;
   $("#gameLevel").textContent = `LEVEL ${game.level} · ${["PEMULA", "PENJELAJAH", "JUARA"][game.level - 1]}`;
+  $("#questionDifficulty").textContent = difficulty.label === "HOTS" ? "SOAL HOTS" : `TINGKAT ${difficulty.label}`;
+  $("#questionDifficulty").dataset.level = difficulty.label;
+  $("#questionDifficulty").classList.toggle("hots-badge", difficulty.label === "HOTS");
   $("#progressFill").style.width = `${game.index / 20 * 100}%`;
   $("#questionText").textContent = question.prompt;
   $("#answerFeedback").textContent = "";

@@ -114,7 +114,12 @@ dialog { color: var(--ink); }
 .progress-fill { width: 5%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #f39863, #f2c573); transition: width .3s; }
 .question-card { position: relative; padding: 24px; border: 1px solid #f2ebdf; border-radius: 17px; background: #fffbf5; }
 .question-decoration { position: absolute; top: 14px; right: 17px; color: #f3c267; font-size: 18px; }
-.question-label { margin-bottom: 12px; color: #bc977a; font-size: 9px; font-weight: 800; letter-spacing: 1px; }
+.question-label-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px; }
+.question-label { margin-bottom: 0; color: #bc977a; font-size: 9px; font-weight: 800; letter-spacing: 1px; }
+.difficulty-badge { padding: 5px 8px; border-radius: 7px; background: #edf5e9; color: #5e8a56; font-size: 8px; font-weight: 800; letter-spacing: .55px; white-space: nowrap; }
+.difficulty-badge[data-level="SEDANG"] { background: #fff3dc; color: #a77a31; }
+.difficulty-badge[data-level="SULIT"] { background: #fff0ec; color: #bf634c; }
+.difficulty-badge.hots-badge { background: #f0eafe; color: #7757be; }
 .question-card h3 { min-height: 65px; margin-bottom: 17px; font: 500 21px/1.42 var(--font-display); white-space: pre-line; }
 .answer-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .answer-option { min-height: 49px; padding: 11px; border: 1px solid #eae7df; border-radius: 11px; background: white; color: #454759; font-size: 13px; font-weight: 700; text-align: left; }
