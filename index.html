@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff9ee">
+  <meta name="description" content="Math Adventure: petualangan matematika kelas V SD Negeri 020620 Binjai.">
+  <title>Math Adventure — Kelas V</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Math Adventure beranda">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span>math<span class="brand-accent">adventure</span><small>KELAS V · SD NEGERI 020620 BINJAI</small></span>
+      </a>
+      <div class="header-actions">
+        <span class="cloud-status" id="cloudStatus"><span class="status-dot"></span><span id="cloudStatusText">Mode lokal</span></span>
+        <button class="icon-button sound-toggle" id="soundToggle" type="button" aria-label="Matikan audio" title="Matikan audio">🔊 <span>Audio ON</span></button>
+        <button class="teacher-button" id="teacherButton" type="button"><span aria-hidden="true">▦</span> Dashboard Guru</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="heroTitle">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="eyebrow-star">✦</span> BELAJAR JADI PETUALANGAN</div>
+          <h1 id="heroTitle">Halo, petualang!<br><span>Siap menaklukkan</span><br>matematika hari ini?</h1>
+          <p>Jelajahi dunia angka, kumpulkan bintang, dan jadilah jagoan matematika kelas V!</p>
+          <div class="hero-stats">
+            <div class="hero-stat"><span class="stat-icon">🧭</span><span><b id="heroPlayed">0</b><small>misi selesai</small></span></div>
+            <div class="stat-divider"></div>
+            <div class="hero-stat"><span class="stat-icon">⭐</span><span><b id="heroStars">0</b><small>bintang terkumpul</small></span></div>
+            <div class="stat-divider"></div>
+            <div class="hero-stat"><span class="stat-icon">🎯</span><span><b id="heroAccuracy">—</b><small>ketepatanmu</small></span></div>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="art-sun"></div><div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+          <div class="art-math math-one">+</div><div class="art-math math-two">÷</div><div class="art-math math-three">π</div>
+          <div class="art-book">📖</div><div class="art-pencil">✏️</div>
+          <div class="art-card"><span>✨</span><b>Level up!</b><small>Kamu pasti bisa</small></div>
+          <div class="art-hill hill-back"></div><div class="art-hill hill-front"></div>
+        </div>
+      </section>
+
+      <section class="student-strip" aria-label="Profil petualang">
+        <div class="student-identity"><div class="avatar" id="studentAvatar">👋</div><div><span class="muted-label">PETUALANG HARI INI</span><strong id="activeStudentName">Siapa namamu?</strong></div></div>
+        <div class="student-controls"><label class="sr-only" for="studentSelect">Pilih siswa</label><select id="studentSelect" aria-label="Pilih siswa"><option value="">Pilih petualang...</option></select><button class="add-student-button" id="addStudentButton" type="button">＋ Tambah siswa</button></div>
+      </section>
+
+      <section class="missions" id="missionsSection">
+        <div class="section-heading"><div><div class="eyebrow section-eyebrow">PETA PETUALANGANMU</div><h2>Pilih misi belajar <span>↘</span></h2></div><p>Setiap misi berisi <b>20 soal seru</b>.<br>Pilih satu dan mulai berpetualang!</p></div>
+        <div class="topic-grid" id="topicGrid" aria-live="polite"></div>
+      </section>
+    </main>
+    <footer><span>✦ Math Adventure</span><span>Dibuat untuk belajar dengan gembira · SD Negeri 020620 Binjai</span></footer>
+  </div>
+
+  <dialog class="app-dialog" id="studentDialog">
+    <form method="dialog" class="dialog-close-form"><button class="dialog-close" aria-label="Tutup">×</button></form>
+    <div class="dialog-kicker">🧑‍🚀 PETUALANG BARU</div><h2>Siapa namamu?</h2><p>Kenalan dulu, yuk! Nama ini akan muncul di petualanganmu.</p>
+    <form id="studentForm"><label for="studentNameInput">Nama siswa</label><input id="studentNameInput" name="name" maxlength="60" placeholder="Contoh: Adi Pratama" required autocomplete="name"><label for="studentClassInput">Kelas (opsional)</label><input id="studentClassInput" name="className" maxlength="30" placeholder="Contoh: V-A"><button class="primary-button full-button" type="submit">Mulai berpetualang <span>→</span></button></form>
+  </dialog>
+
+  <dialog class="app-dialog game-dialog" id="gameDialog" aria-labelledby="gameTitle">
+    <div class="game-top"><div><span class="game-kicker" id="gameTopic"></span><h2 id="gameTitle">Misi petualangan</h2></div><button class="dialog-close game-exit" id="exitGame" type="button" aria-label="Keluar dari permainan">×</button></div>
+    <div class="progress-row"><span id="questionCounter">SOAL 1 DARI 20</span><span id="gameLevel">LEVEL 1 · PEMULA</span></div><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="question-card"><div class="question-decoration" aria-hidden="true">✦</div><p class="question-label">YUK, PIKIRKAN!</p><h3 id="questionText"></h3><div class="answer-grid" id="answerGrid"></div><div class="feedback" id="answerFeedback" role="status" aria-live="polite"></div></div>
+    <div class="game-footer"><span>⭐ <b id="gameScore">0</b> bintang</span><span id="streakText">Semangat, kamu pasti bisa!</span></div>
+  </dialog>
+
+  <dialog class="app-dialog result-dialog" id="resultDialog" aria-labelledby="resultTitle">
+    <form method="dialog" class="dialog-close-form"><button class="dialog-close" aria-label="Tutup">×</button></form><div class="result-confetti" aria-hidden="true">🎉 ✨ ⭐</div>
+    <div class="dialog-kicker">MISI SELESAI!</div><h2 id="resultTitle">Kerja hebat, petualang!</h2><p id="resultStudent"></p><div class="result-score" id="resultScore">0/20</div><p class="result-message" id="resultMessage"></p>    <div class="result-stats"><div><b id="resultCorrect">0</b><span>jawaban benar</span></div><div><b id="resultAccuracy">0%</b><span>ketepatan</span></div><div><b id="resultLevel">Level 1</b><span>level tertinggi</span></div></div><button class="primary-button full-button" id="resultDone" type="button">Kembali ke peta misi <span>→</span></button>
+  </dialog>
+
+  <dialog class="app-dialog teacher-dialog" id="teacherDialog" aria-labelledby="teacherTitle">
+    <div class="teacher-heading"><div><div class="dialog-kicker">RUANG KENDALI</div><h2 id="teacherTitle">Dashboard guru</h2><p>Pantau perjalanan belajar semua petualang.</p></div><button class="dialog-close" id="closeTeacher" type="button" aria-label="Tutup dashboard">×</button></div>
+    <form class="teacher-auth" id="teacherAuthForm"><div class="auth-copy"><b>Login guru untuk melihat data cloud</b><span>Gunakan akun guru yang sudah dibuat di Supabase Authentication.</span></div><div class="auth-fields"><input id="teacherEmail" type="email" placeholder="Email guru" aria-label="Email guru" required autocomplete="username"><input id="teacherPassword" type="password" placeholder="Kata sandi" aria-label="Kata sandi" required autocomplete="current-password"><button class="export-button" type="submit">Login</button></div><button class="text-button logout-button" id="teacherLogout" type="button" hidden>Keluar dari akun guru</button><span class="auth-feedback" id="teacherAuthFeedback" aria-live="polite"></span></form>
+    <div class="dashboard-stats"><div class="dashboard-stat"><span>🧑‍🚀</span><div><b id="dashStudents">0</b><small>Petualang</small></div></div><div class="dashboard-stat"><span>🧭</span><div><b id="dashMissions">0</b><small>Misi selesai</small></div></div><div class="dashboard-stat"><span>⭐</span><div><b id="dashStars">0</b><small>Bintang</small></div></div><div class="dashboard-stat"><span>🎯</span><div><b id="dashAccuracy">—</b><small>Ketepatan rata-rata</small></div></div></div>
+    <div class="dashboard-toolbar"><div><h3>Perkembangan siswa</h3><span id="recordCount">Belum ada hasil misi</span></div><div class="export-actions"><button class="export-button" id="exportExcel" type="button">▤ Excel</button><button class="export-button" id="exportWord" type="button">▤ Word</button><button class="export-button" id="exportPdf" type="button">▧ PDF</button></div></div>
+    <div class="table-wrap"><table><thead><tr><th>Nama siswa</th><th>Kelas</th><th>Misi</th><th>Benar</th><th>Nilai (%)</th><th>Level tertinggi</th><th>Tanggal</th></tr></thead><tbody id="resultsTable"><tr><td class="empty-table" colspan="7">Belum ada misi selesai. Yuk, mulai petualangan!</td></tr></tbody></table></div>
+    <div class="teacher-bottom"><button class="text-button" id="openCloudSettings" type="button">⚙ Atur koneksi Supabase</button><button class="text-button" id="clearLocalData" type="button">Hapus data lokal</button></div>
+  </dialog>
+
+  <dialog class="app-dialog settings-dialog" id="settingsDialog" aria-labelledby="settingsTitle">
+    <form method="dialog" class="dialog-close-form"><button class="dialog-close" aria-label="Tutup">×</button></form>
+    <div class="dialog-kicker">☁️ PENYIMPANAN CLOUD</div><h2 id="settingsTitle">Hubungkan Supabase</h2><p>Masukkan URL proyek dan <b>anon / publishable key</b> dari pengaturan proyek Supabase. Kredensial tersimpan di browser ini.</p>
+    <form id="settingsForm"><label for="supabaseUrl">Project URL</label><input id="supabaseUrl" type="url" placeholder="https://proyek-anda.supabase.co"><label for="supabaseKey">Anon / publishable key</label><input id="supabaseKey" type="password" placeholder="sb_publishable_... atau anon key" autocomplete="off"><button class="primary-button full-button" type="submit">Simpan & hubungkan <span>→</span></button></form>
+    <button class="text-button setup-link" id="showSetupInstructions" type="button">Bagaimana cara mengaktifkannya?</button><p class="settings-note" id="settingsFeedback" aria-live="polite"></p>
+  </dialog>
+
+  <dialog class="app-dialog instructions-dialog" id="instructionsDialog">
+    <form method="dialog" class="dialog-close-form"><button class="dialog-close" aria-label="Tutup">×</button></form>
+    <div class="dialog-kicker">🚀 PANDUAN SINGKAT</div><h2>Aktifkan penyimpanan cloud</h2>
+    <ol><li>Buat proyek gratis di <b>supabase.com</b>.</li><li>Buka <b>SQL Editor</b>, lalu jalankan isi file <code>supabase.sql</code> yang tersedia di folder aplikasi.</li><li>Salin Project URL dan anon/publishable key dari <b>Project Settings → API</b>.</li><li>Tempelkan keduanya pada formulir pengaturan Supabase. Jangan pernah masukkan service_role key.</li></ol><p>Tanpa konfigurasi, aplikasi tetap berjalan dengan penyimpanan lokal di browser ini.</p>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
